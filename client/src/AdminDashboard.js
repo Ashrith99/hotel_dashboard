@@ -1,7 +1,7 @@
 const React = require('react');
 const { useState, useEffect } = require('react');
 const { db } = require('./firebase'); 
-const { collection, onSnapshot } = require('firebase/firestore');
+const { collection, onSnapshot, query, orderBy } = require('firebase/firestore');
 
 
 const AdminDashboard = () => {
@@ -10,7 +10,11 @@ const AdminDashboard = () => {
 
     useEffect(() => {
         const ordersRef = collection(db, 'orders');
-        const unsubscribe = onSnapshot(ordersRef, (snapshot) => {
+
+        const ordersQuery = query(ordersRef, orderBy('createdAt', 'desc'));
+
+
+        const unsubscribe = onSnapshot(ordersQuery, (snapshot) => {
             const ordersList = snapshot.docs.map(doc => doc.data());
             setOrders(ordersList);
         }, (error) => {
