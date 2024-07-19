@@ -19,7 +19,7 @@ app.get("/getData", (req, res) => {
 app.post("/sendOrder", async (req, res) => {
 
     const { tableNumber, dishes } = req.body;
-    // const newOrder = { tableNumber, dishes };
+    
     const newOrder = { tableNumber, dishes, createdAt: serverTimestamp() };
     
 
@@ -35,8 +35,6 @@ const PORT = 5000;
 app.listen(PORT, function() { 
     console.log(`Server is running on port ${PORT}`);
 });
-
-
 // send url
 // http://localhost:5000/sendOrder
 
