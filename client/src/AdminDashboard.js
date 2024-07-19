@@ -12,17 +12,24 @@ const AdminDashboard = () => {
     useEffect(() => {
         const ordersRef = collection(db, 'orders');
         const ordersQuery = query(ordersRef, orderBy('createdAt', 'desc'));
-
+    
         const unsubscribe = onSnapshot(ordersQuery, (snapshot) => {
             const ordersList = snapshot.docs.map(doc => {
                 const data = doc.data();
                 return { id: doc.id, ...data };
             });
             setOrders(ordersList);
+    
+            // Update the orderDelivered state based on the fetched data
+            const deliveredStatus = {};
+            ordersList.forEach(order => {
+                deliveredStatus[order.id] = order.isDelivered;
+            });
+            setOrderDelivered(deliveredStatus);
         }, (error) => {
             setError(error.message);
         });
-
+    
         return () => unsubscribe();
     }, []);
 
@@ -30,11 +37,23 @@ const AdminDashboard = () => {
         setSelectedTable(tableNumber);
     };
 
-    const handleOrderDelivered = (orderId) => {
-        setOrderDelivered(prev => ({
-            ...prev,
-            [orderId]: true
-        }));
+    const handleOrderDelivered = async (orderId) => {
+        try {
+            await fetch('http://localhost:5000/markAsDelivered', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ orderId }),
+            });
+    
+            setOrderDelivered(prev => ({
+                ...prev,
+                [orderId]: true,
+            }));
+        } catch (error) {
+            console.error('Error marking order as delivered:', error);
+        }
     };
 
     const getOrderDetails = (tableNumber) => {
@@ -114,3 +133,4 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+
