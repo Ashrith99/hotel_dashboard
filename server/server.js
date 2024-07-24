@@ -10,11 +10,12 @@ app.use(bodyParser.json());
 
 app.post("/sendOrder", async (req, res) => {
     const { tableNumber, dishes } = req.body;
+    console.log("Received order data:", req.body);
     const newOrder = { tableNumber, dishes, createdAt: serverTimestamp(), isDelivered: false };
 
     try {
         await addDoc(collection(db, 'orders'), newOrder);
-        res.send("Order received successfully");
+        res.send("Order received successfullyyyyyyyyy");
     } catch (error) {
         res.status(500).send("Error: " + error.message);
     }
